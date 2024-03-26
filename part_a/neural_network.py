@@ -1,5 +1,4 @@
 import sys
-
 sys.path.append('../')  # Adding the parent directory to the Python path
 from utils import *
 from torch.autograd import Variable
@@ -11,6 +10,8 @@ import torch.utils.data
 
 import numpy as np
 import torch
+
+import matplotlib.pyplot as plt # For plotting
 
 
 def load_data(base_path="../data"):
@@ -73,14 +74,15 @@ class AutoEncoder(nn.Module):
         # Implement the function as described in the docstring.             #
         # Use sigmoid activations for f and g.                              #
         #####################################################################
-        out = inputs
+        h1 = F.sigmoid(self.g(inputs))
+        out = F.sigmoid(self.h(h1))
         #####################################################################
         #                       END OF YOUR CODE                            #
         #####################################################################
         return out
 
 
-def train(model, lr, lamb, train_data, zero_train_data, valid_data, num_epoch):
+def train(model, lr, lamb, train_data, zero_train_data, valid_data, num_epoch, plot=True):
     """ Train the neural network, where the objective also includes
     a regularizer.
 
@@ -102,6 +104,9 @@ def train(model, lr, lamb, train_data, zero_train_data, valid_data, num_epoch):
     optimizer = optim.SGD(model.parameters(), lr=lr)
     num_student = train_data.shape[0]
 
+    train_cost = []
+    valid_accs = []
+
     for epoch in range(0, num_epoch):
         train_loss = 0.
 
@@ -116,15 +121,36 @@ def train(model, lr, lamb, train_data, zero_train_data, valid_data, num_epoch):
             nan_mask = np.isnan(train_data[user_id].unsqueeze(0).numpy())
             target[0][nan_mask] = output[0][nan_mask]
 
-            loss = torch.sum((output - target) ** 2.)
+            loss = torch.sum((output - target) ** 2.) + lamb/2 * model.get_weight_norm()
             loss.backward()
 
             train_loss += loss.item()
             optimizer.step()
 
         valid_acc = evaluate(model, zero_train_data, valid_data)
+
+        if plot:
+            train_cost.append(train_loss)
+            valid_accs.append(valid_acc)
+
         print("Epoch: {} \tTraining Cost: {:.6f}\t "
               "Valid Acc: {}".format(epoch, train_loss, valid_acc))
+        
+    if plot:
+        plt.title("SGD Training Curve")
+        plt.plot(train_cost, label="Training Loss")
+        plt.xlabel("Epochs")
+        plt.ylabel("Training Cost")
+        plt.show()
+
+        plt.title("SGD Validation Accuracy")
+        plt.plot(valid_accs, label="Valid Acc")
+        plt.xlabel("Epochs")
+        plt.ylabel("Validation Accuracy")
+        plt.show()
+
+    return valid_acc
+
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
@@ -156,6 +182,7 @@ def evaluate(model, train_data, valid_data):
     return correct / float(total)
 
 
+
 def main():
     zero_train_matrix, train_matrix, valid_data, test_data = load_data()
 
@@ -164,17 +191,65 @@ def main():
     # Try out 5 different k and select the best k using the             #
     # validation set.                                                   #
     #####################################################################
-    # Set model hyperparameters.
-    k = None
-    model = None
 
+
+    ##### Hyperparameter Tuning: Most Performant (k, lr, num_epoch) = (50, 0.05, 10) ######
+    # lamb = 0.2
+    # k_list = [10,50,100,200,500]
+
+    # lr_list = [0.01, 0.05, 0.005]
+    # num_epoch_list = [10, 20, 40, 60]
+
+    # tune_iter = 1
+    # tuned_params = [0, 0, 0, 0, 0] # [k, lr, num_epoch, valid_acc]
+    # param_combs = len(k_list) * len(lr_list) * len(num_epoch_list)
+    # for curr_k in k_list:
+    #     for curr_lr in lr_list:
+    #         for curr_epoch in num_epoch_list:
+    #             print("############### Trial {}/{}: k = {}, lr = {}, num_epoch = {} ###############".format(tune_iter, param_combs, curr_k, curr_lr, curr_epoch))
+
+    #             curr_model = AutoEncoder(train_matrix.shape[1], curr_k)
+    #             curr_valid_acc =  train(curr_model, curr_lr, lamb, train_matrix, zero_train_matrix, valid_data, curr_epoch, plot=False)
+
+    #             if curr_valid_acc > tuned_params[-1]:
+    #                 tuned_params = [curr_k, curr_lr, curr_epoch, curr_valid_acc]
+
+    #             print("best_params = " + str(tuned_params))    
+    #             tune_iter += 1
+
+    # print("FINISHED!!!!!!!!!!!!" + str(tuned_params))
+
+    
+    ##### Plotting Optimal hyperparams: Test Accuracy = 0.6782387806943269 #####
+    k = 50
+    model = AutoEncoder(train_matrix.shape[1], k)
     # Set optimization hyperparameters.
-    lr = None
-    num_epoch = None
-    lamb = None
+    lr = 0.05
+    num_epoch = 10
+    lamb = 0
+    # train(model, lr, lamb, train_matrix, zero_train_matrix, valid_data, num_epoch)
+    # test_acc = evaluate(model, zero_train_matrix, test_data)
+    # print(test_acc)
 
-    train(model, lr, lamb, train_matrix, zero_train_matrix,
-          valid_data, num_epoch)
+
+    ###### Tuning Regularizer weight: Most Performant Lambda = 0.001 ###### 
+    # lamb_list = [0.001, 0.01, 0.1, 1]
+    # tuned_lamb = [0, 0]     # [lambda, valid_acc]
+    # for curr_lamb in lamb_list:
+    #     print("########### Lambda = {} ###########".format(curr_lamb))
+    #     curr_model = AutoEncoder(train_matrix.shape[1], k)
+    #     curr_valid_acc =  train(curr_model, lr, curr_lamb, train_matrix, zero_train_matrix, valid_data, num_epoch, plot=False)
+
+    #     if curr_valid_acc > tuned_lamb[-1]:
+    #         tuned_lamb = [curr_lamb, curr_valid_acc]
+        
+    # print("Best Lambda = " + str(tuned_lamb[0]))
+
+    lamb = 0.001
+    train(model, lr, lamb, train_matrix, zero_train_matrix, valid_data, num_epoch)
+    test_acc = evaluate(model, zero_train_matrix, test_data)
+    print(test_acc)
+ 
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
