@@ -1,6 +1,3 @@
-import sys
-
-sys.path.append('../')  # Adding the parent directory to the Python path
 from sklearn.impute import KNNImputer
 from utils import *
 import matplotlib.pyplot as plt
@@ -90,7 +87,7 @@ def main():
     plt.suptitle("Validation Accuracy Across Different k Values")
     plt.xlabel("k")
     plt.ylabel("Validation accuracy")
-    plt.savefig("./plots/knn/q1_a.pdf")
+    plt.savefig("../plots/knn/q1_a.pdf")
 
     k_star_by_item = None
     best_val_acc_by_item = 0
@@ -113,7 +110,7 @@ def main():
     plt.suptitle("Validation Accuracy Across Different k Values")
     plt.xlabel("k")
     plt.ylabel("Validation accuracy")
-    plt.savefig("./plots/knn/q1_c.pdf")
+    plt.savefig("../plots/knn/q1_c.pdf")
 
     #####################################################################
     #                       END OF YOUR CODE                            #

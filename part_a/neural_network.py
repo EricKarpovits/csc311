@@ -1,3 +1,6 @@
+import sys
+
+sys.path.append('../')  # Adding the parent directory to the Python path
 from utils import *
 from torch.autograd import Variable
 
