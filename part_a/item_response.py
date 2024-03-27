@@ -100,15 +100,7 @@ def update_theta_beta(data, lr, theta, beta):
         new_beta.append(np.sum(sigmoid(theta_beta_difference) - curr_is_correct))
     theta = theta + lr * np.array(new_theta)
     beta = beta + lr * np.array(new_beta)
-
-
-    #        data_index
-    #        np.where(x==theta_index, user_id)
-    #    [ for i in range(len(theta))]
-    #    theta = [np.sum()]
-    #    itr = 0
-    #    for i in range(itr):
-    #        continue
+    
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
