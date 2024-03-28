@@ -1,0 +1,61 @@
+\fontfamily{lmss}
+% \usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{url}
+\usepackage{multicol}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{physics2}
+\usepackage[spaced=0]{diffcoeff}
+
+\newcommand{\incfig}[1]{%
+    \def\svgwidth{\columnwidth}
+    \import{./figures/}{#1.pdf_tex}
+}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=blue,
+}
+
+\usepackage{geometry}
+\geometry{
+    top=1in,            % <-- you want to adjust this
+    bottom=1in,
+    left=1in,
+    right=1in,
+    headheight=3ex,       % <-- and this
+    headsep=4ex,          % <-- and this
+}
+
+\usephysicsmodule{ab}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\footrulewidth}{0.4pt}
+\lhead{}
+\rfoot{Page \thepage}
+
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+
+
+\difdef { f, s, c, l } {}
+{
+    op-symbol =d,
+    op-order-nudge = 1 mu
+}
+
+\makeatletter
+\newcommand\vb{\@ifstar\boldsymbol\mathbf}
+\newcommand\va[1]{\@ifstar{\vec{#1}}{\vec{\mathrm{#1}}}}
+\newcommand\vu[1]{%
+    \@ifstar{\hat{{#1}}}{\hat{{#1}}}}
+% \renewcommand*{\vec}[][default]{def}
+\makeatother
