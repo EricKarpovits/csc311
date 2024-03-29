@@ -141,12 +141,14 @@ def train(model, lr, lamb, train_data, zero_train_data, valid_data, num_epoch, p
         plt.plot(train_cost, label="Training Loss")
         plt.xlabel("Epochs")
         plt.ylabel("Training Cost")
+        plt.savefig("./plots/nn/SGDTrainCurve")
         plt.show()
 
         plt.title("SGD Validation Accuracy")
         plt.plot(valid_accs, label="Valid Acc")
         plt.xlabel("Epochs")
         plt.ylabel("Validation Accuracy")
+        plt.savefig("./plots/nn/SGDValidAcc")
         plt.show()
 
     return valid_acc
