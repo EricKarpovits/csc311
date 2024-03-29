@@ -15,26 +15,7 @@ import matplotlib.pyplot as plt # For plotting
 
 
 def load_meta_data(path):
-    # data = {
-    #     "user_id": [],
-    #     "gender": [],
-    # }
-    # # Iterate over the row to fill in the data.
-    # with open(path, "r") as csv_file:
-    #     reader = csv.reader(csv_file)
-    #     for row in reader:
-    #         try:
-    #             data["user_id"].append(int(row[0]))
-    #             data["gender"].append(int(row[1]))
-    #         except ValueError:
-    #             # Pass first row.
-    #             pass
-    #         except IndexError:
-    #             # is_correct might not be available.
-    #             pass
-
-
-    data = np.genfromtxt(path, delimiter=',', usecols=(0,1), skip_header=1)
+    data = np.genfromtxt(path, delimiter=',', usecols=(0,1,3), skip_header=1)
 
     data_sorted =  data[data[:, 0].argsort()]
     return np.delete(data_sorted, 0, axis=1)
@@ -59,14 +40,13 @@ def load_data(base_path="../data"):
     valid_data = load_valid_csv(base_path)
     test_data = load_public_test_csv(base_path)
 
-    zero_train_matrix = train_matrix.copy()
-    # Fill in the missing entries to 0.
-    zero_train_matrix[np.isnan(train_matrix)] = 0
 
     metaData = load_meta_data("../data/student_meta.csv")
-    
-    zero_train_matrix = np.concatenate((zero_train_matrix, metaData), axis=1)
+
     train_matrix = np.concatenate((train_matrix, metaData), axis=1)
+    zero_train_matrix = train_matrix.copy()
+    zero_train_matrix[np.isnan(train_matrix)] = 0
+
 
     # for i, u in enumerate(metaData["user_id"]):
         
@@ -74,7 +54,6 @@ def load_data(base_path="../data"):
     #     if guess == valid_data["is_correct"][i]:
     #         correct += 1
     #     total += 1
-
     
 
     # Change to Float Tensor for PyTorch.
@@ -231,7 +210,7 @@ def main():
     zero_train_matrix, train_matrix, valid_data, test_data = load_data()
 
     k = 50
-    model = AutoEncoder(zero_train_matrix.shape[1], k)
+    model = AutoEncoder(train_matrix.shape[1], k)
     # Set optimization hyperparameters.
     lr = 0.05
     num_epoch = 10
