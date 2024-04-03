@@ -4,10 +4,12 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
+
 def sigmoid(x):
     """ Apply sigmoid function.
     """
     return np.exp(x) / (1 + np.exp(x))
+
 
 def process_data(data, theta, beta):
     """ From the given data, obtain the np array of user_id, question_id,
@@ -27,6 +29,7 @@ def process_data(data, theta, beta):
     data_beta = beta[question_id]
     return user_id, question_id, is_correct, data_theta, data_beta
 
+
 def index_process_data(is_correct, data_theta, data_beta, data_index):
     """ Get the np arrays of the is_correct values, data_theta values and
     data_beta values at each index value in data_index array
@@ -38,6 +41,7 @@ def index_process_data(is_correct, data_theta, data_beta, data_index):
     :return: np arrays
     """
     return is_correct[data_index], data_theta[data_index], data_beta[data_index]
+
 
 def neg_log_likelihood(data, theta, beta):
     """ Compute the negative log-likelihood.
@@ -57,7 +61,8 @@ def neg_log_likelihood(data, theta, beta):
     log_lklihood = 0.
     user_id, question_id, is_correct, data_theta, data_beta = process_data(data, theta, beta)
 
-    log_lklihood = np.sum(is_correct*(data_theta - data_beta) - (np.log(np.ones(len(user_id))+np.exp(data_theta - data_beta))))
+    log_lklihood = np.sum(
+        is_correct * (data_theta - data_beta) - (np.log(np.ones(len(user_id)) + np.exp(data_theta - data_beta))))
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
@@ -89,18 +94,20 @@ def update_theta_beta(data, lr, theta, beta):
     new_theta = []
     for theta_index in range(542):
         data_index = np.where(user_id == theta_index)[0]
-        curr_is_correct, curr_data_theta, curr_data_beta = index_process_data(is_correct, data_theta, data_beta, data_index)
+        curr_is_correct, curr_data_theta, curr_data_beta = index_process_data(is_correct, data_theta, data_beta,
+                                                                              data_index)
         theta_beta_difference = curr_data_theta - curr_data_beta
         new_theta.append(np.sum(curr_is_correct - sigmoid(theta_beta_difference)))
     new_beta = []
     for beta_index in range(1774):
         data_index = np.where(question_id == beta_index)[0]
-        curr_is_correct, curr_data_theta, curr_data_beta = index_process_data(is_correct, data_theta, data_beta, data_index)
+        curr_is_correct, curr_data_theta, curr_data_beta = index_process_data(is_correct, data_theta, data_beta,
+                                                                              data_index)
         theta_beta_difference = curr_data_theta - curr_data_beta
         new_beta.append(np.sum(sigmoid(theta_beta_difference) - curr_is_correct))
     theta = theta + lr * np.array(new_theta)
     beta = beta + lr * np.array(new_beta)
-    
+
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
@@ -169,7 +176,7 @@ def evaluate(data, theta, beta):
         p_a = sigmoid(x)
         pred.append(p_a >= 0.5)
     return np.sum((data["is_correct"] == np.array(pred))) \
-           / len(data["is_correct"])
+        / len(data["is_correct"])
 
 
 def main():
@@ -198,7 +205,7 @@ def main():
     # Implement part (d)                                                #
     #####################################################################
 
-    # I will pick Q1, Q100, Q500
+    # I will pick Q1, Q100, Q500, and they are j1, j2, j3 respectively
     QID = [1, 100, 500]
     total_likelihood = []
     sorted_theta = sorted(theta)
@@ -210,20 +217,13 @@ def main():
         total_likelihood.append(likelihood)
 
     plt.title("Likelihood of corretly answering each question with respect to theta")
-    plt.plot(sorted_theta, total_likelihood[0], label="Q1 likelihood of answering correctly")
-    plt.plot(sorted_theta, total_likelihood[1], label="Q100 likelihood of answering correctly")
-    plt.plot(sorted_theta, total_likelihood[2], label="Q500 likelihood of answering correctly")
+    plt.plot(sorted_theta, total_likelihood[0], label="likelihood of correctly answering j1")
+    plt.plot(sorted_theta, total_likelihood[1], label="likelihood of correctly answering j2")
+    plt.plot(sorted_theta, total_likelihood[2], label="likelihood of correctly answering j3")
     plt.xlabel("Theta")
     plt.ylabel("Likelihood of getting correct answer")
     plt.legend()
     plt.show()
-
-    # Draft Written Answer: TODO: DELETE ME after typing into the document
-    # The curves generally all go upward in S shape with increasing theta value, with relatively lower slope on the 2 ends and higher slope in the middle.
-    # These curves represent how the students' abilities affect their chances of answering each question correctly
-    # This is reflecting the difficulty level of each question as well because the ones that are generally steeper would have lower difficulty because
-    # students can largely improve their chances of correctly answering them with slight increase of their abilities, while those with
-    # lower slope values will requires higher improvement on students' abilities to increase students' chances of correctly answering them.
 
     # #####################################################################
     #                       END OF YOUR CODE                            #

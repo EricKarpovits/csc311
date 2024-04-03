@@ -22,6 +22,85 @@
 \newpage
 \section{kNN}
 \section{Item Response Theory}
+\subsection{Part a}
+Because the student can either answer one diagnostic question only correctly or incorrectly, for student $i$ and question $j$, we can represent $c_{ij}$ as Bernoulli random variable.
+
+Because $p(c_{ij}=1|\theta_{i},\beta_{j})=\frac{exp(\theta_{i}-\beta{j})}{1+exp(\theta_{i} - \beta_{j})}$ and $c_{ij}$ is Bernoulli random variable,
+\[
+\begin{split}
+p(c_{ij}|\theta_{i},\beta_{j})&=(\frac{exp(\theta_{i}-\beta{j})}{1+exp(\theta_{i} - \beta_{j})})^{c_{ij}}(1-\frac{exp(\theta_{i}-\beta{j})}{1+exp(\theta_{i} - \beta_{j})})^{(1-c_{ij})}\\
+     &=(\frac{exp(\theta_{i}-\beta{j})}{1+exp(\theta_{i} - \beta_{j})})^{c_{ij}}(\frac{1}{1+exp(\theta_{i} - \beta_{j})})^{(1-c_{ij})}\\
+ \end{split}
+\]
+Because the probability of different students answering different questions are independent of each other, the likelihood of the sparse matrix given $\theta$ and $\beta$ parameters are:
+
+\[
+\begin{split}
+p(C|\theta,\beta)=\prod_{i=0}^{541}\prod_{j=0}^{1773} p(c_{ij})
+ \end{split}
+\]
+
+Therefore, the log-likelihood is:
+\[
+\begin{split}
+\sum_{i=0}^{541}\sum_{j=0}^{1773} p(c_{ij}) &= \sum_{i=0}^{541}\sum_{j=0}^{1773} log((\frac{exp(\theta_{i}-\beta{j})}{1+exp(\theta_{i} - \beta_{j})})^{c_{ij}}(\frac{1}{1+exp(\theta_{i} - \beta_{j})})^{(1-c_{ij})})) \\
+&= \sum_{i=0}^{541}\sum_{j=0}^{1773} (c_{ij}((\theta_{i}-\beta_{j}) - log(1+exp(\theta_{i} - \beta_{j}))) + (1-c_{ij})(log(1) - log(1+exp(\theta_{i} - \beta_{j})))) \\
+&= \sum_{i=0}^{541}\sum_{j=0}^{1773} (c_{ij}(\theta_{i}-\beta_{j}) - c_{ij}(log(1+exp(\theta_{i} - \beta_{j}))) + (1-c_{ij})(- log(1+exp(\theta_{i} - \beta_{j})))) \\
+&= \sum_{i=0}^{541}\sum_{j=0}^{1773} (c_{ij}(\theta_{i}-\beta_{j})  + (c_{ij}+1-c_{ij})(- log(1+exp(\theta_{i} - \beta_{j})))) \\
+&= \sum_{i=0}^{541}\sum_{j=0}^{1773} (c_{ij}(\theta_{i}-\beta_{j})  - log(1+exp(\theta_{i} - \beta_{j}))) \\
+ \end{split}
+\]
+Therefore, the log-likelihood is: $log(p(C|\theta, \beta) = \sum_{i=0}^{541}\sum_{j=0}^{1773} (c_{ij}(\theta_{i}-\beta_{j})  - log(1+exp(\theta_{i} - \beta_{j})))$
+
+Let $LL$ denote that log-likelihood (i.e. $LL = log(p(C|\theta, \beta) = \sum_{i=0}^{541}\sum_{j=0}^{1773} (c_{ij}(\theta_{i}-\beta_{j})  - log(1+exp(\theta_{i} - \beta_{j})))$)
+
+The derivative of the log-likelihood $LL$ with respect to $\theta_{i}$ is
+
+\[
+\begin{split}
+\frac{\partial LL}{\partial \theta_{i}} &= \frac{\partial}{\partial \theta_{i}} (\sum_{k=0}^{541}\sum_{j=0}^{1773} (c_{kj}(\theta_{k}-\beta_{j})  - log(1+exp(\theta_{k} - \beta_{j}))))\\
+&= \sum_{j=0}^{1773} (\frac{\partial}{\partial \theta_{i}}c_{ij}(\theta_{i}-\beta_{j}) - \frac{\partial}{\partial \theta_{i}}log(1+exp(\theta_{i} - \beta_{j}))) \\
+&= \sum_{j=0}^{1773} (c_{ij} - \frac{\frac{\partial}{\partial \theta_{i}}(1+exp(\theta_{i} - \beta_{j}))}{1+exp(\theta_{i} - \beta_{j})}) \\
+&= \sum_{j=0}^{1773} (c_{ij} - \frac{\frac{\partial}{\partial \theta_{i}}(exp(\theta_{i} - \beta_{j}))}{1+exp(\theta_{i} - \beta_{j})}) \\
+&= \sum_{j=0}^{1773} (c_{ij} - \frac{exp(\theta_{i} - \beta_{j})}{1+exp(\theta_{i} - \beta_{j})}) \\
+ \end{split}
+\]
+
+The derivative of the log-likelihood LL with respect to $\beta_{j}$ is
+
+\[
+\begin{split}
+\frac{\partial LL}{\partial \beta_{j}} &= \frac{\partial}{\partial \beta_{j}} (\sum_{i=0}^{541}\sum_{k=0}^{1773} (c_{ik}(\theta_{i}-\beta_{k})  - log(1+exp(\theta_{i} - \beta_{k}))))\\
+&= \sum_{i=0}^{541} (\frac{\partial}{\partial \beta_{j}}c_{ij}(\theta_{i}-\beta_{j}) - \frac{\partial}{\partial \beta_{j}}log(1+exp(\theta_{i} - \beta_{j}))) \\
+&= \sum_{i=0}^{541} (-c_{ij} - \frac{\frac{\partial}{\partial \beta_{j}}(1+exp(\theta_{i} - \beta_{j}))}{1+exp(\theta_{i} - \beta_{j})}) \\
+&= \sum_{i=0}^{541} (-c_{ij} - \frac{\frac{\partial}{\partial \beta_{j}}(exp(\theta_{i} - \beta_{j}))}{1+exp(\theta_{i} - \beta_{j})}) \\
+&= \sum_{i=0}^{541} (-c_{ij} - \frac{-exp(\theta_{i} - \beta_{j})}{1+exp(\theta_{i} - \beta_{j})}) \\
+&= \sum_{i=0}^{541} (-c_{ij} + \frac{exp(\theta_{i} - \beta_{j})}{1+exp(\theta_{i} - \beta_{j})}) \\
+ \end{split}
+\]
+\subsection{Part b}
+See python file
+
+
+\subsection{Part c}
+The hyper-parameters we selected as tuning them is:
+
+learning rate:  0.00271
+
+number of iterations: 50
+
+The validation accuracy of our final model is: 0.708580299
+
+The testing accuracy of our final model is: 0.702511995
+
+TODO: Add the plot here
+
+\subsection{Part D}
+TODO: Add the plot here
+
+With increasing theta value, the curves generally all go upward in S shape (with relatively lower slope on the 2 ends and higher slope in the middle).
+These curves represent how the students' abilities affect their chances of answering each question correctly (In general, as students' abilities improves, they are doing better on every question, despite how hard each question is, as the curves are all going upwards). The curves are reflecting the difficulty level of each question as well because the ones that are steeper in average would have relatively lower difficulty because students can largely improve their chances of correctly answering them with slight increase of their abilities, while those with lower slope values will requires higher improvement on students' abilities to increase students' chances of correctly answering them.
+
 \section{Neural Networks}
 
 \section{Part B}
