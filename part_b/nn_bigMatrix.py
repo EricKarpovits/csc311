@@ -14,6 +14,15 @@ import torch
 import matplotlib.pyplot as plt # For plotting
 
 
+def load_meta_data(path):
+    data = np.genfromtxt(path, delimiter=',', usecols=(0,1,3), skip_header=1)
+
+    data_sorted =  data[data[:, 0].argsort()]
+    return np.delete(data_sorted, 0, axis=1)
+
+
+
+
 def load_data(base_path="../data"):
     """ Load the data in PyTorch Tensor.
 
@@ -31,9 +40,22 @@ def load_data(base_path="../data"):
     valid_data = load_valid_csv(base_path)
     test_data = load_public_test_csv(base_path)
 
+
+    metaData = load_meta_data("../data/student_meta.csv")
+
+    train_matrix = np.concatenate((train_matrix, metaData), axis=1)
     zero_train_matrix = train_matrix.copy()
-    # Fill in the missing entries to 0.
     zero_train_matrix[np.isnan(train_matrix)] = 0
+
+
+    # for i, u in enumerate(metaData["user_id"]):
+        
+    #     guess = output[0][valid_data["question_id"][i]].item() >= 0.5
+    #     if guess == valid_data["is_correct"][i]:
+    #         correct += 1
+    #     total += 1
+    
+
     # Change to Float Tensor for PyTorch.
     zero_train_matrix = torch.FloatTensor(zero_train_matrix)
     train_matrix = torch.FloatTensor(train_matrix)
@@ -76,6 +98,7 @@ class AutoEncoder(nn.Module):
         #####################################################################
         h1 = F.sigmoid(self.g(inputs))
         out = F.sigmoid(self.h(h1))
+
         #####################################################################
         #                       END OF YOUR CODE                            #
         #####################################################################
@@ -141,14 +164,12 @@ def train(model, lr, lamb, train_data, zero_train_data, valid_data, num_epoch, p
         plt.plot(train_cost, label="Training Loss")
         plt.xlabel("Epochs")
         plt.ylabel("Training Cost")
-        plt.savefig("./plots/nn/SGDTrainCurve")
         plt.show()
 
         plt.title("SGD Validation Accuracy")
         plt.plot(valid_accs, label="Valid Acc")
         plt.xlabel("Epochs")
         plt.ylabel("Validation Accuracy")
-        plt.savefig("./plots/nn/SGDValidAcc")
         plt.show()
 
     return valid_acc
@@ -188,73 +209,16 @@ def evaluate(model, train_data, valid_data):
 def main():
     zero_train_matrix, train_matrix, valid_data, test_data = load_data()
 
-    #####################################################################
-    # TODO:                                                             #
-    # Try out 5 different k and select the best k using the             #
-    # validation set.                                                   #
-    #####################################################################
-
-
-    ##### Hyperparameter Tuning: Most Performant (k, lr, num_epoch) = (50, 0.05, 10) ######
-    # lamb = 0.2
-    # k_list = [10,50,100,200,500]
-
-    # lr_list = [0.01, 0.05, 0.005]
-    # num_epoch_list = [10, 20, 40, 60]
-
-    # tune_iter = 1
-    # tuned_params = [0, 0, 0, 0, 0] # [k, lr, num_epoch, valid_acc]
-    # param_combs = len(k_list) * len(lr_list) * len(num_epoch_list)
-    # for curr_k in k_list:
-    #     for curr_lr in lr_list:
-    #         for curr_epoch in num_epoch_list:
-    #             print("############### Trial {}/{}: k = {}, lr = {}, num_epoch = {} ###############".format(tune_iter, param_combs, curr_k, curr_lr, curr_epoch))
-
-    #             curr_model = AutoEncoder(train_matrix.shape[1], curr_k)
-    #             curr_valid_acc =  train(curr_model, curr_lr, lamb, train_matrix, zero_train_matrix, valid_data, curr_epoch, plot=False)
-
-    #             if curr_valid_acc > tuned_params[-1]:
-    #                 tuned_params = [curr_k, curr_lr, curr_epoch, curr_valid_acc]
-
-    #             print("best_params = " + str(tuned_params))    
-    #             tune_iter += 1
-
-    # print("FINISHED!!!!!!!!!!!!" + str(tuned_params))
-
-    
-    ##### Plotting Optimal hyperparams: Test Accuracy = 0.6782387806943269 #####
     k = 50
     model = AutoEncoder(train_matrix.shape[1], k)
     # Set optimization hyperparameters.
     lr = 0.05
     num_epoch = 10
-    lamb = 0
-    # train(model, lr, lamb, train_matrix, zero_train_matrix, valid_data, num_epoch)
-    # test_acc = evaluate(model, zero_train_matrix, test_data)
-    # print(test_acc)
-
-
-    ###### Tuning Regularizer weight: Most Performant Lambda = 0.001 ###### 
-    # lamb_list = [0.001, 0.01, 0.1, 1]
-    # tuned_lamb = [0, 0]     # [lambda, valid_acc]
-    # for curr_lamb in lamb_list:
-    #     print("########### Lambda = {} ###########".format(curr_lamb))
-    #     curr_model = AutoEncoder(train_matrix.shape[1], k)
-    #     curr_valid_acc =  train(curr_model, lr, curr_lamb, train_matrix, zero_train_matrix, valid_data, num_epoch, plot=False)
-
-    #     if curr_valid_acc > tuned_lamb[-1]:
-    #         tuned_lamb = [curr_lamb, curr_valid_acc]
-        
-    # print("Best Lambda = " + str(tuned_lamb[0]))
 
     lamb = 0.001
     train(model, lr, lamb, train_matrix, zero_train_matrix, valid_data, num_epoch)
     test_acc = evaluate(model, zero_train_matrix, test_data)
     print(test_acc)
- 
-    #####################################################################
-    #                       END OF YOUR CODE                            #
-    #####################################################################
 
 
 if __name__ == "__main__":
