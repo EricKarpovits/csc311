@@ -36,7 +36,7 @@ def load_data(base_path="../data"):
     zero_train_matrix[np.isnan(train_matrix)] = 0
     # Change to Float Tensor for PyTorch.
     zero_train_matrix = torch.FloatTensor(zero_train_matrix)
-    train_matrix = torch.FloatTensor(train_matrix)
+    train_matrix = torch.FloatTensor(train_matrix)\
 
     return zero_train_matrix, train_matrix, valid_data, test_data
 
