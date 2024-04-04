@@ -119,40 +119,6 @@ def main():
     #                       END OF YOUR CODE                            #
     #####################################################################
 
-"""
-Temp answers to put on report 
-(a):
-(TODO: add plot)
-k* = 11 with test accuracy of 0.6841659610499576
-(b): (TODO: find better word for liklihood???)
-The underlying assumption on which item-based collaborative filtering relies on the likelihood of a 
-new student answering question A correctly is predicted by observing the consistency in answers to question A 
-and another question B across multiple students. If the same students tend to answer both questions correctly or
-incorrectly, then one can forecast the outcome for question A based on the established response pattern to question B.
-(c):
-TODO: add plot
-k* = 21 with test accuracy of 0.6816257408975445
-
-(d) 
-User-based collaborative filtering marginally outperformed item-based collaborative filtering.
-TODO: Do i need to explain why????? idk why
-
-(e)
-Potential Limitations:
-(Is this a good one? - Can do noise instead, or the assumption from (b))
-1. Scalability: 
- - As the dataset expands with more users or items or choose to run it on a large dataset, kNN can become computationally intensive. This is due 
- to the necessity of calculating distances across all pairs of users or items, which can lead to inefficencies for 
- particularly extensive datasets.  
-2. Sparsity:
-Another issue could be the lack of sufficient data. 
-Given that approximately 94% (as calculated using np.isnan(sparse_matrix).sum() / sparse_matrix.size) of the values are missing in the sparse matrix used to calculate distances between items or users, 
-this scarcity could potentially diminish the effectiveness of the NaN-Euclidean distance metric deployed in the kNN algorithm.
-
-3. The item-based assumption from (b) may not hold true in practice.
-
-"""
-
 
 if __name__ == "__main__":
     main()

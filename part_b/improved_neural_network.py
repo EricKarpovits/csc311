@@ -292,7 +292,7 @@ def main():
 
     # print("FINISHED!!!!!!!!!!!!" + str(tuned_params))
 
-    #### Plotting Optimal hyperparams: Valid Accuracy = 0.7070279424216765 #####
+    #### Plotting Optimal hyperparams: Valid Accuracy = 0.7066045723962744 #####
     encoder_dim = 50
     bottleneck_dim = 10
     model = AutoEncoder(train_matrix.shape[1], encoder_dim, bottleneck_dim)
@@ -300,11 +300,11 @@ def main():
     lr = 0.001
     num_epoch = 150
     lamb = 0
-    #valid_acc, valid_accs, train_accs, train_cost = train(model, lr, lamb, train_matrix, zero_train_matrix, valid_data, num_epoch)
-    #print(valid_acc)
+    valid_acc, valid_accs, train_accs, train_cost = train(model, lr, lamb, train_matrix, zero_train_matrix, valid_data, num_epoch)
+    print(valid_acc)
 
 
-    ###### Tuning Regularizer weight: Most Performant Lambda = TODO ######
+    ###### Tuning Regularizer weight: Most Performant Lambda = 0 ######
     # lamb_list = [0, 0.001, 0.01, 0.1, 1]
     # num_epoch_list = [10, 30, 50, 100, 150, 200]
     # tuned_lamb = [0, 0, 0]     # [lambda, epochs, valid_acc]
