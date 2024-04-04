@@ -340,8 +340,8 @@ def main():
         print("Current Regularizer: " + str(each_regularizer))
         model = AutoEncoder(train_matrix.shape[1], encoder_dim, bottleneck_dim)
         valid_acc, valid_accs, train_accs, train_cost = train(model, lr, lamb, train_matrix, zero_train_matrix, valid_data, num_epoch, train_data_csv=train_data_csv, reg=each_regularizer)
-        different_regularizer_train_accs_lst.append(valid_accs)
-        different_regularizer_valid_accs_lst.append(train_accs)
+        different_regularizer_train_accs_lst.append(train_accs)
+        different_regularizer_valid_accs_lst.append(valid_accs)
         print(valid_acc)
 
     plt.title("SGD training accuracies of different regularizers")
